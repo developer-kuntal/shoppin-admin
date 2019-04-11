@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "856326883115",
+    "firebase_url": "https://fashion-admin.firebaseio.com",
+    "project_id": "fashion-admin",
+    "storage_bucket": "fashion-admin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856326883115:android:3789466525fb4b0a",
+        "android_client_info": {
+          "package_name": "com.kuntal.shop_app_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "856326883115-b9g703b8neuedk428s1dpq7r5ersdaaq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kuntal.shop_app_admin",
+            "certificate_hash": "990d5abb9da7980cfc0b2d3cda827fa6a7fee5e7"
+          }
+        },
+        {
+          "client_id": "856326883115-s2506eh6t6pe2bsiu451oktanl6puaf2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_wluxYoklJU-y3VGo2kdmcY7KjdtFuV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "856326883115-s2506eh6t6pe2bsiu451oktanl6puaf2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
