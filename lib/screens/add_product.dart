@@ -20,13 +20,14 @@ class _AddProductState extends State<AddProduct> {
   List<DocumentSnapshot> categories = <DocumentSnapshot>[];
   List<DropdownMenuItem<String>> categoriesDropDown = <DropdownMenuItem<String>>[];
   List<DropdownMenuItem<String>> brandsDropDown = <DropdownMenuItem<String>>[];
-  String _currentCategory = "test";
-  String _currentBrand = "test";
+  String _currentCategory;
+  String _currentBrand;
 
   Color white = Colors.white;
   Color black = Colors.black;
   Color grey = Colors.grey;
   Color red = Colors.red;
+  List<String> selectedSizes = <String>[];
 
   @override
   void initState() {
@@ -140,6 +141,7 @@ class _AddProductState extends State<AddProduct> {
                 decoration: InputDecoration(
                   hintText: "Product name"
                 ),
+                style: TextStyle(fontSize: 10.0),
                 validator: (value) {
                   if(value.isEmpty) {
                     return "You must enter the product name";
@@ -155,22 +157,24 @@ class _AddProductState extends State<AddProduct> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Category: ', style: TextStyle(color: red),),
+                  child: Text('Category: ', style: TextStyle(color: red, fontSize: 10.0)),
                 ),
                 DropdownButton(
                   items: categoriesDropDown,
                   onChanged: changeSelectedCategory,
                   value: _currentCategory,
+                  style: TextStyle(color: Colors.black, fontSize: 20.0),
                 ),
 
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Brand: ', style: TextStyle(color: red),),
+                  child: Text('Brand: ', style: TextStyle(color: red, fontSize: 10.0)),
                 ),
                 DropdownButton(
                   items: brandsDropDown,
                   onChanged: changeSelectedBrand,
                   value: _currentBrand,
+                  style: TextStyle(color: Colors.black, fontSize: 20.0),
                 ),
               ],
             ),
@@ -184,6 +188,7 @@ class _AddProductState extends State<AddProduct> {
                 decoration: InputDecoration(
                   hintText: "Quantity"
                 ),
+                style: TextStyle(fontSize: 10.0),
                 validator: (value) {
                   if(value.isEmpty) {
                     return "You must enter the product quantity";
@@ -192,74 +197,75 @@ class _AddProductState extends State<AddProduct> {
               ),
             ),
 
-            Text('Available Sizes: '),
+            Text('Available Sizes: ', style: TextStyle(fontSize: 10.0),),
 
             Row(
               children: <Widget>[
+                // Checkbox(value: selectedSizes.contains('XS'), onChanged: changeSelectedSize,),
                 Checkbox(value: false, onChanged: null,),
-                Text('xS'),
+                Text('XS', style: TextStyle(fontSize: 8.0),),
 
                 Checkbox(value: false, onChanged: null,),
-                Text('S'),
+                Text('S', style: TextStyle(fontSize: 8.0),),
 
                 Checkbox(value: false, onChanged: null,),
-                Text('M'),
+                Text('M', style: TextStyle(fontSize: 8.0),),
 
                 Checkbox(value: false, onChanged: null,),
-                Text('L'),
+                Text('L', style: TextStyle(fontSize: 8.0),),
 
                 Checkbox(value: false, onChanged: null,),
-                Text('XL'),
+                Text('XL', style: TextStyle(fontSize: 8.0),),
 
                 Checkbox(value: false, onChanged: null,),
-                Text('XXL'),
+                Text('XXL', style: TextStyle(fontSize: 8.0),),
               ],
             ),
 
             Row(
               children: <Widget>[
                 Checkbox(value: false, onChanged: null,),
-                Text('28'),
+                Text('28', style: TextStyle(fontSize: 8.0),),
 
                 Checkbox(value: false, onChanged: null,),
-                Text('30'),
+                Text('30', style: TextStyle(fontSize: 8.0),),
                 
                 Checkbox(value: false, onChanged: null,),
-                Text('32'),
+                Text('32', style: TextStyle(fontSize: 8.0),),
 
                 Checkbox(value: false, onChanged: null,),
-                Text('34'),
+                Text('34', style: TextStyle(fontSize: 8.0),),
 
                 Checkbox(value: false, onChanged: null,),
-                Text('36'),
+                Text('36', style: TextStyle(fontSize: 8.0),),
 
                 Checkbox(value: false, onChanged: null,),
-                Text('38'),
+                Text('38', style: TextStyle(fontSize: 8.0),),
+
               ],
             ),
 
-            Row(
-              children: <Widget>[
+            // Row(
+            //   children: <Widget>[
+            //     Checkbox(value: false, onChanged: null,),
+            //     Text('40', style: TextStyle(fontSize: 8.0),),
 
-                Checkbox(value: false, onChanged: null,),
-                Text('40'),
+            //     Checkbox(value: false, onChanged: null,),
+            //     Text('42', style: TextStyle(fontSize: 8.0),),
 
-                Checkbox(value: false, onChanged: null,),
-                Text('42'),
+            //     Checkbox(value: false, onChanged: null,),
+            //     Text('44', style: TextStyle(fontSize: 8.0),),
 
-                Checkbox(value: false, onChanged: null,),
-                Text('44'),
+            //     Checkbox(value: false, onChanged: null,),
+            //     Text('46', style: TextStyle(fontSize: 8.0),),
 
-                Checkbox(value: false, onChanged: null,),
-                Text('46'),
+            //     Checkbox(value: false, onChanged: null,),
+            //     Text('48', style: TextStyle(fontSize: 8.0),),
 
-                Checkbox(value: false, onChanged: null,),
-                Text('48'),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('50'),
-              ],
-            ),
+            //     Checkbox(value: false, onChanged: null,),
+            //     Text('50', style: TextStyle(fontSize: 8.0),),
+            //   ],
+            // ),
 
             FlatButton(
               color: red,
@@ -357,7 +363,7 @@ class _AddProductState extends State<AddProduct> {
     setState(() {
       brands = data;
       brandsDropDown = getBrandsDropDown();
-      _currentBrand= brands[0].data['brand'];
+      _currentBrand = brands[0].data['brand'];
       print(data.length);
     });
   }
@@ -366,4 +372,11 @@ class _AddProductState extends State<AddProduct> {
     setState(() => _currentBrand = selectedBrand);
   }
 
+  // void changeSelectedSize(bool size) {
+  //   if(selectedSizes.contains(size)) {
+  //     selectedSizes.remove(size);
+  //   } else {
+  //     selectedSizes.add(size);
+  //   }
+  // }
 }
