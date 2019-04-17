@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shop_app_admin/db/brand.dart';
 import 'package:shop_app_admin/db/category.dart';
-
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class AddProduct extends StatefulWidget {
   @override
@@ -31,16 +31,34 @@ class _AddProductState extends State<AddProduct> {
   @override
   void initState() {
     _getCategories();
-    // _getBrands();
-    categoriesDropDown = getCategoriesDropDown();
+    _getBrands();
     // _currentCategory = categoriesDropDown[0].value;
   }
 
   List<DropdownMenuItem<String>> getCategoriesDropDown() {
     List<DropdownMenuItem<String>> items = new List();
-    for(DocumentSnapshot category in categories) {
-      items.add(new DropdownMenuItem(child: Text(category['category']),
-      value: category['category'],));
+    for(int i = 0; i < categories.length; i++) {
+      // items.add(new DropdownMenuItem(child: Text(category['category']),
+      // value: category['category'],));
+      setState(() {
+          items.insert(0, DropdownMenuItem(child: Text(categories[i].data['category']),
+            value: categories[i].data['category'],
+          ));
+      });
+    }
+    return items;
+  }
+
+  List<DropdownMenuItem<String>> getBrandsDropDown() {
+    List<DropdownMenuItem<String>> items = new List();
+    for(int i = 0; i < brands.length; i++) {
+      // items.add(new DropdownMenuItem(child: Text(category['category']),
+      // value: category['category'],));
+      setState(() {
+          items.insert(0, DropdownMenuItem(child: Text(brands[i].data['brand']),
+            value: brands[i].data['brand'],
+          ));
+      });
     }
     return items;
   }
@@ -63,14 +81,14 @@ class _AddProductState extends State<AddProduct> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: OutlineButton(
-                    borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
-                    onPressed: () {
+                      borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
+                      onPressed: () {
 
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(14.0, 40.0, 14.0, 40.0),
-                      child: new Icon(Icons.add, color: grey,),
-                    ),
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
+                        child: new Icon(Icons.add, color: grey,),
+                      ),
                     ),
                   ),
               ),
@@ -78,29 +96,30 @@ class _AddProductState extends State<AddProduct> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: OutlineButton(
-                    borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
-                    onPressed: () {
+                      borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
+                      onPressed: () {
 
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(14.0, 40.0, 14.0, 40.0),
-                      child: new Icon(Icons.add, color: grey,),
-                    ),
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
+                        child: new Icon(Icons.add, color: grey, ),
+                      ),
                     ),
                   ),
               ),
+
               Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: OutlineButton(
-                    borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
-                    onPressed: () {
+                      borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
+                      onPressed: () {
 
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(14.0, 40.0, 14.0, 40.0),
-                      child: new Icon(Icons.add, color: grey,),
-                    ),
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
+                        child: new Icon(Icons.add, color: grey,),
+                      ),
                     ),
                   ),
               ),
@@ -131,23 +150,188 @@ class _AddProductState extends State<AddProduct> {
               ),
             ),
             
-            Expanded(
-              child: ListView.builder(
-                itemCount: categories.length,
-                itemBuilder: (_, index) {
-                  return ListTile(
-                    title: Text(categories[index]['category']),
-                  );
+            // select category
+            Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Category: ', style: TextStyle(color: red),),
+                ),
+                DropdownButton(
+                  items: categoriesDropDown,
+                  onChanged: changeSelectedCategory,
+                  value: _currentCategory,
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Brand: ', style: TextStyle(color: red),),
+                ),
+                DropdownButton(
+                  items: brandsDropDown,
+                  onChanged: changeSelectedBrand,
+                  value: _currentBrand,
+                ),
+              ],
+            ),
+
+            // select brand
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: TextFormField(
+                controller: productNameController,
+                keyboardType: TextInputType.numberWithOptions(),
+                decoration: InputDecoration(
+                  hintText: "Quantity"
+                ),
+                validator: (value) {
+                  if(value.isEmpty) {
+                    return "You must enter the product quantity";
+                  }
                 },
               ),
-            )
-            // Center(
-            //   child: DropdownButton(
-            //     value: _currentCategory,
-            //     items: categoriesDropDown,
-            //     onChanged: changeSelectedCategory,
+            ),
+
+            Text('Available Sizes: '),
+
+            Row(
+              children: <Widget>[
+                Checkbox(value: false, onChanged: null,),
+                Text('xS'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('S'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('M'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('L'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('XL'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('XXL'),
+              ],
+            ),
+
+            Row(
+              children: <Widget>[
+                Checkbox(value: false, onChanged: null,),
+                Text('28'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('30'),
+                
+                Checkbox(value: false, onChanged: null,),
+                Text('32'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('34'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('36'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('38'),
+              ],
+            ),
+
+            Row(
+              children: <Widget>[
+
+                Checkbox(value: false, onChanged: null,),
+                Text('40'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('42'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('44'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('46'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('48'),
+
+                Checkbox(value: false, onChanged: null,),
+                Text('50'),
+              ],
+            ),
+
+            FlatButton(
+              color: red,
+              textColor: white,
+              child: Text("add product"),
+              onPressed: () {
+
+              },
+            ),
+
+            
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: TypeAheadField(
+            //     textFieldConfiguration: TextFieldConfiguration(
+            //       autofocus: false,
+            //       decoration: InputDecoration(
+            //         hintText: 'add category',
+            //       )
+            //     ),
+
+            //     suggestionsCallback: (pattern) async {
+            //       return await _categoryService.getSuggestions(pattern);
+            //     },
+
+            //     itemBuilder: (context, suggestion) {
+            //       return ListTile(
+            //         leading: Icon(Icons.category),
+            //         title: Text(suggestion['category']),
+            //       );
+            //     },
+
+            //     onSuggestionSelected: (suggestion) {
+            //       setState(() {
+            //         _currentCategory = suggestion['category']; 
+            //       });
+            //     }
+
             //   ),
-            // )
+            // ),
+
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: TypeAheadField(
+            //     textFieldConfiguration: TextFieldConfiguration(
+            //       autofocus: false,
+            //       decoration: InputDecoration(
+            //         hintText: 'add brand',
+            //         // border: OutlineInputBorder()
+            //       )
+            //     ),
+
+            //     suggestionsCallback: (pattern) async {
+            //       return await _brandService.getSuggestions(pattern);
+            //     },
+
+            //     itemBuilder: (context, suggestion) {
+            //       return ListTile(
+            //         leading: Icon(Icons.category),
+            //         title: Text(suggestion['brand']),
+            //       );
+            //     },
+
+            //     onSuggestionSelected: (suggestion) {
+            //       setState(() {
+            //         _currentBrand = suggestion['brands']; 
+            //       });
+            //     }
+
+            //   ),
+            // ),
+
           ],
         ),
       ),
@@ -157,12 +341,29 @@ class _AddProductState extends State<AddProduct> {
   _getCategories() async {
     List<DocumentSnapshot> data = await _categoryService.getCategories();
     setState(() {
-     categories = data; 
-     print(data.length);
+      categories = data;
+      categoriesDropDown = getCategoriesDropDown();
+      _currentCategory = categories[0].data['category'];
+      print(data.length);
     });
   }
 
   changeSelectedCategory(String selectedCategory) {
     setState(() => _currentCategory = selectedCategory);
   }
+
+  _getBrands() async {
+    List<DocumentSnapshot> data = await _brandService.getBtands();
+    setState(() {
+      brands = data;
+      brandsDropDown = getBrandsDropDown();
+      _currentBrand= brands[0].data['brand'];
+      print(data.length);
+    });
+  }
+
+  changeSelectedBrand(String selectedBrand) {
+    setState(() => _currentBrand = selectedBrand);
+  }
+
 }
