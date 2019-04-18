@@ -70,275 +70,242 @@ class _AddProductState extends State<AddProduct> {
       appBar: new AppBar(
         elevation: 0.1,
         backgroundColor: white,
-        leading: Icon(Icons.close, color: black,),
+        leading: Icon(Icons.close, color: black, ),
         title: Text("add product", style: TextStyle(color: black),),
+        
       ),
-      body: Form(
-          key: _formKey,
-          child: Column(
-          children: <Widget>[
-            Row(children: <Widget>[
-              Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: OutlineButton(
-                      borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
-                      onPressed: () {
+      body: new Container(
+          child: Form(
+            key: _formKey,
+            child: Column(
+            children: <Widget>[
+              Row(children: <Widget>[
+                Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: OutlineButton(
+                        borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
+                        onPressed: () {
 
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-                        child: new Icon(Icons.add, color: grey,),
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
+                          child: new Icon(Icons.add, color: grey,),
+                        ),
                       ),
+                    ),
+                ),
+                Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: OutlineButton(
+                        borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
+                        onPressed: () {
+
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
+                          child: new Icon(Icons.add, color: grey, ),
+                        ),
+                      ),
+                    ),
+                ),
+
+                Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: OutlineButton(
+                        borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
+                        onPressed: () {
+
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
+                          child: new Icon(Icons.add, color: grey,),
+                        ),
+                      ),
+                    ),
+                ),
+              ],
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('Enter a product name within 10 charecters.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: red, fontSize: 12.0),),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                          Flexible(
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.apps),
+                                hintText: 'Product name',
+                              ),
+                              validator: (value) {
+                                if(value.isEmpty) {
+                                  return "You must enter the product name";
+                                } else if(value.length > 10) {
+                                  return "Product name can't have more than 10 letters";
+                                }
+                              },
+                              onSaved: (String value) {
+                                // This optional block of code can be used to run
+                                // code when the user saves the form.
+                              },
+                            ),
+                          )
+
+                      ],
                     ),
                   ),
               ),
-              Expanded(
-                  child: Padding(
+              
+              // select category
+              Row(
+                children: <Widget>[
+                  Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: OutlineButton(
-                      borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
-                      onPressed: () {
-
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-                        child: new Icon(Icons.add, color: grey, ),
-                      ),
-                    ),
+                    child: Text('Category: ', style: TextStyle(color: red, fontSize: 10.0)),
                   ),
+                  DropdownButton(
+                    items: categoriesDropDown,
+                    onChanged: changeSelectedCategory,
+                    value: _currentCategory,
+                    style: TextStyle(color: Colors.black, fontSize: 20.0),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('Brand: ', style: TextStyle(color: red, fontSize: 10.0)),
+                  ),
+                  DropdownButton(
+                    items: brandsDropDown,
+                    onChanged: changeSelectedBrand,
+                    value: _currentBrand,
+                    style: TextStyle(color: Colors.black, fontSize: 20.0),
+                  ),
+                ],
               ),
 
-              Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: OutlineButton(
-                      borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
-                      onPressed: () {
-
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-                        child: new Icon(Icons.add, color: grey,),
-                      ),
-                    ),
+              // select brand
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TextFormField(
+                  controller: productNameController,
+                  keyboardType: TextInputType.numberWithOptions(),
+                  decoration: InputDecoration(
+                    hintText: "Quantity"
                   ),
+                  style: TextStyle(fontSize: 10.0),
+                  validator: (value) {
+                    if(value.isEmpty) {
+                      return "You must enter the product quantity";
+                    }
+                  },
+                ),
               ),
+
+              Text('Available Sizes: ', style: TextStyle(fontSize: 10.0),),
+
+              Row(
+                children: <Widget>[
+                  Checkbox(value: selectedSizes.contains('XS'), 
+                            onChanged: (value) => changeSelectedSize('XS'),),
+                  Text('XS', style: TextStyle(fontSize: 8.0),),
+
+                  Checkbox(value: selectedSizes.contains('S'), 
+                            onChanged: (value) => changeSelectedSize('S'),),
+                  Text('S', style: TextStyle(fontSize: 8.0),),
+
+                  Checkbox(value: selectedSizes.contains('M'), 
+                            onChanged: (value) => changeSelectedSize('M'),),
+                  Text('M', style: TextStyle(fontSize: 8.0),),
+
+                  Checkbox(value: selectedSizes.contains('L'), 
+                            onChanged: (value) => changeSelectedSize('L'),),
+                  Text('L', style: TextStyle(fontSize: 8.0),),
+
+                  Checkbox(value: selectedSizes.contains('XL'), 
+                            onChanged: (value) => changeSelectedSize('XL'),),
+                  Text('XL', style: TextStyle(fontSize: 8.0),),
+
+                  Checkbox(value: selectedSizes.contains('XXL'), 
+                            onChanged: (value) => changeSelectedSize('XXL'),),
+                  Text('XXL', style: TextStyle(fontSize: 8.0),),
+                ],
+              ),
+
+              Row(
+                children: <Widget>[
+                  Checkbox(value: selectedSizes.contains('28'), 
+                            onChanged: (value) => changeSelectedSize('28'),),
+                  Text('28', style: TextStyle(fontSize: 8.0),),
+
+                  Checkbox(value: selectedSizes.contains('30'), 
+                            onChanged: (value) => changeSelectedSize('30'),),
+                  Text('30', style: TextStyle(fontSize: 8.0),),
+                  
+                  Checkbox(value: selectedSizes.contains('32'), 
+                            onChanged: (value) => changeSelectedSize('32'),),
+                  Text('32', style: TextStyle(fontSize: 8.0),),
+
+                  Checkbox(value: selectedSizes.contains('34'), 
+                            onChanged: (value) => changeSelectedSize('34'),),
+                  Text('34', style: TextStyle(fontSize: 8.0),),
+
+                  Checkbox(value: selectedSizes.contains('36'), 
+                            onChanged: (value) => changeSelectedSize('36'),),
+                  Text('36', style: TextStyle(fontSize: 8.0),),
+
+                  Checkbox(value: selectedSizes.contains('38'), 
+                            onChanged: (value) => changeSelectedSize('38'),),
+                  Text('38', style: TextStyle(fontSize: 8.0),),
+
+                ],
+              ),
+
+              // Row(
+              //   children: <Widget>[
+              //     Checkbox(value: false, onChanged: null,),
+              //     Text('40', style: TextStyle(fontSize: 8.0),),
+
+              //     Checkbox(value: false, onChanged: null,),
+              //     Text('42', style: TextStyle(fontSize: 8.0),),
+
+              //     Checkbox(value: false, onChanged: null,),
+              //     Text('44', style: TextStyle(fontSize: 8.0),),
+
+              //     Checkbox(value: false, onChanged: null,),
+              //     Text('46', style: TextStyle(fontSize: 8.0),),
+
+              //     Checkbox(value: false, onChanged: null,),
+              //     Text('48', style: TextStyle(fontSize: 8.0),),
+
+              //     Checkbox(value: false, onChanged: null,),
+              //     Text('50', style: TextStyle(fontSize: 8.0),),
+              //   ],
+              // ),
+
+              FlatButton(
+                color: red,
+                textColor: white,
+                child: Text("add product"),
+                onPressed: () {
+
+                },
+              ),
+
             ],
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('Enter a product name within 10 charecters.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: red, fontSize: 12.0),),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: TextFormField(
-                controller: productNameController,
-                decoration: InputDecoration(
-                  hintText: "Product name"
-                ),
-                style: TextStyle(fontSize: 10.0),
-                validator: (value) {
-                  if(value.isEmpty) {
-                    return "You must enter the product name";
-                  } else if(value.length > 10) {
-                    return "Product name can't have more than 10 letters";
-                  }
-                },
-              ),
-            ),
-            
-            // select category
-            Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Category: ', style: TextStyle(color: red, fontSize: 10.0)),
-                ),
-                DropdownButton(
-                  items: categoriesDropDown,
-                  onChanged: changeSelectedCategory,
-                  value: _currentCategory,
-                  style: TextStyle(color: Colors.black, fontSize: 20.0),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Brand: ', style: TextStyle(color: red, fontSize: 10.0)),
-                ),
-                DropdownButton(
-                  items: brandsDropDown,
-                  onChanged: changeSelectedBrand,
-                  value: _currentBrand,
-                  style: TextStyle(color: Colors.black, fontSize: 20.0),
-                ),
-              ],
-            ),
-
-            // select brand
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: TextFormField(
-                controller: productNameController,
-                keyboardType: TextInputType.numberWithOptions(),
-                decoration: InputDecoration(
-                  hintText: "Quantity"
-                ),
-                style: TextStyle(fontSize: 10.0),
-                validator: (value) {
-                  if(value.isEmpty) {
-                    return "You must enter the product quantity";
-                  }
-                },
-              ),
-            ),
-
-            Text('Available Sizes: ', style: TextStyle(fontSize: 10.0),),
-
-            Row(
-              children: <Widget>[
-                // Checkbox(value: selectedSizes.contains('XS'), onChanged: changeSelectedSize,),
-                Checkbox(value: false, onChanged: null,),
-                Text('XS', style: TextStyle(fontSize: 8.0),),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('S', style: TextStyle(fontSize: 8.0),),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('M', style: TextStyle(fontSize: 8.0),),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('L', style: TextStyle(fontSize: 8.0),),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('XL', style: TextStyle(fontSize: 8.0),),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('XXL', style: TextStyle(fontSize: 8.0),),
-              ],
-            ),
-
-            Row(
-              children: <Widget>[
-                Checkbox(value: false, onChanged: null,),
-                Text('28', style: TextStyle(fontSize: 8.0),),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('30', style: TextStyle(fontSize: 8.0),),
-                
-                Checkbox(value: false, onChanged: null,),
-                Text('32', style: TextStyle(fontSize: 8.0),),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('34', style: TextStyle(fontSize: 8.0),),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('36', style: TextStyle(fontSize: 8.0),),
-
-                Checkbox(value: false, onChanged: null,),
-                Text('38', style: TextStyle(fontSize: 8.0),),
-
-              ],
-            ),
-
-            // Row(
-            //   children: <Widget>[
-            //     Checkbox(value: false, onChanged: null,),
-            //     Text('40', style: TextStyle(fontSize: 8.0),),
-
-            //     Checkbox(value: false, onChanged: null,),
-            //     Text('42', style: TextStyle(fontSize: 8.0),),
-
-            //     Checkbox(value: false, onChanged: null,),
-            //     Text('44', style: TextStyle(fontSize: 8.0),),
-
-            //     Checkbox(value: false, onChanged: null,),
-            //     Text('46', style: TextStyle(fontSize: 8.0),),
-
-            //     Checkbox(value: false, onChanged: null,),
-            //     Text('48', style: TextStyle(fontSize: 8.0),),
-
-            //     Checkbox(value: false, onChanged: null,),
-            //     Text('50', style: TextStyle(fontSize: 8.0),),
-            //   ],
-            // ),
-
-            FlatButton(
-              color: red,
-              textColor: white,
-              child: Text("add product"),
-              onPressed: () {
-
-              },
-            ),
-
-            
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: TypeAheadField(
-            //     textFieldConfiguration: TextFieldConfiguration(
-            //       autofocus: false,
-            //       decoration: InputDecoration(
-            //         hintText: 'add category',
-            //       )
-            //     ),
-
-            //     suggestionsCallback: (pattern) async {
-            //       return await _categoryService.getSuggestions(pattern);
-            //     },
-
-            //     itemBuilder: (context, suggestion) {
-            //       return ListTile(
-            //         leading: Icon(Icons.category),
-            //         title: Text(suggestion['category']),
-            //       );
-            //     },
-
-            //     onSuggestionSelected: (suggestion) {
-            //       setState(() {
-            //         _currentCategory = suggestion['category']; 
-            //       });
-            //     }
-
-            //   ),
-            // ),
-
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: TypeAheadField(
-            //     textFieldConfiguration: TextFieldConfiguration(
-            //       autofocus: false,
-            //       decoration: InputDecoration(
-            //         hintText: 'add brand',
-            //         // border: OutlineInputBorder()
-            //       )
-            //     ),
-
-            //     suggestionsCallback: (pattern) async {
-            //       return await _brandService.getSuggestions(pattern);
-            //     },
-
-            //     itemBuilder: (context, suggestion) {
-            //       return ListTile(
-            //         leading: Icon(Icons.category),
-            //         title: Text(suggestion['brand']),
-            //       );
-            //     },
-
-            //     onSuggestionSelected: (suggestion) {
-            //       setState(() {
-            //         _currentBrand = suggestion['brands']; 
-            //       });
-            //     }
-
-            //   ),
-            // ),
-
-          ],
+          ),
         ),
       ),
     );
@@ -372,11 +339,15 @@ class _AddProductState extends State<AddProduct> {
     setState(() => _currentBrand = selectedBrand);
   }
 
-  // void changeSelectedSize(bool size) {
-  //   if(selectedSizes.contains(size)) {
-  //     selectedSizes.remove(size);
-  //   } else {
-  //     selectedSizes.add(size);
-  //   }
-  // }
+  void changeSelectedSize(String size) {
+    if(selectedSizes.contains(size)) {
+      setState(() { 
+        selectedSizes.remove(size);
+      });
+    } else {
+      setState(() {
+        selectedSizes.add(size);
+      });
+    }
+  }
 }
