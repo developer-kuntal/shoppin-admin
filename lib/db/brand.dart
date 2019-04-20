@@ -12,7 +12,7 @@ class BrandService{
     _firestore.collection(ref).document(brandId).setData({'brand': name});
   }
 
-  Future<List<DocumentSnapshot>> getBtands() {
+  Future<List<DocumentSnapshot>> geBrands() {
     return _firestore.collection(ref).getDocuments().then((snap) {
       return snap.documents;
     });

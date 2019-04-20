@@ -1,9 +1,13 @@
-import 'dart:convert';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:shop_app_admin/db/brand.dart';
 import 'package:shop_app_admin/db/category.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class AddProduct extends StatefulWidget {
   @override
@@ -11,54 +15,54 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProductState extends State<AddProduct> {
- 
   CategoryService _categoryService = CategoryService();
   BrandService _brandService = BrandService();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController productNameController = new TextEditingController();
+  TextEditingController productNameController = TextEditingController();
+  TextEditingController quatityController = TextEditingController();
   List<DocumentSnapshot> brands = <DocumentSnapshot>[];
   List<DocumentSnapshot> categories = <DocumentSnapshot>[];
   List<DropdownMenuItem<String>> categoriesDropDown = <DropdownMenuItem<String>>[];
   List<DropdownMenuItem<String>> brandsDropDown = <DropdownMenuItem<String>>[];
   String _currentCategory;
   String _currentBrand;
-
   Color white = Colors.white;
   Color black = Colors.black;
   Color grey = Colors.grey;
   Color red = Colors.red;
   List<String> selectedSizes = <String>[];
+  File _image1;
+  File _image2;
+  File _image3;
+
+
+
+
+
 
   @override
   void initState() {
     _getCategories();
     _getBrands();
-    // _currentCategory = categoriesDropDown[0].value;
   }
 
-  List<DropdownMenuItem<String>> getCategoriesDropDown() {
+  List<DropdownMenuItem<String>> getCategoriesDropdown(){
     List<DropdownMenuItem<String>> items = new List();
-    for(int i = 0; i < categories.length; i++) {
-      // items.add(new DropdownMenuItem(child: Text(category['category']),
-      // value: category['category'],));
+    for(int i = 0; i < categories.length; i++){
       setState(() {
-          items.insert(0, DropdownMenuItem(child: Text(categories[i].data['category']),
-            value: categories[i].data['category'],
-          ));
+        items.insert(0, DropdownMenuItem(child: Text(categories[i].data['category']),
+            value: categories[i].data['category']));
       });
     }
     return items;
   }
 
-  List<DropdownMenuItem<String>> getBrandsDropDown() {
+  List<DropdownMenuItem<String>> getBrandosDropDown(){
     List<DropdownMenuItem<String>> items = new List();
-    for(int i = 0; i < brands.length; i++) {
-      // items.add(new DropdownMenuItem(child: Text(category['category']),
-      // value: category['category'],));
+    for(int i = 0; i < brands.length; i++){
       setState(() {
-          items.insert(0, DropdownMenuItem(child: Text(brands[i].data['brand']),
-            value: brands[i].data['brand'],
-          ));
+        items.insert(0, DropdownMenuItem(child: Text(brands[i].data['brand']),
+            value: brands[i].data['brand']));
       });
     }
     return items;
@@ -67,243 +71,194 @@ class _AddProductState extends State<AddProduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
+      appBar: AppBar(
         elevation: 0.1,
         backgroundColor: white,
-        leading: Icon(Icons.close, color: black, ),
+        leading: Icon(Icons.close, color: black,),
         title: Text("add product", style: TextStyle(color: black),),
-        
       ),
-      body: new Container(
-          child: Form(
-            key: _formKey,
-            child: Column(
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
             children: <Widget>[
-              Row(children: <Widget>[
-                Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: OutlineButton(
-                        borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
-                        onPressed: () {
-
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-                          child: new Icon(Icons.add, color: grey,),
-                        ),
-                      ),
-                    ),
-                ),
-                Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: OutlineButton(
-                        borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
-                        onPressed: () {
-
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-                          child: new Icon(Icons.add, color: grey, ),
-                        ),
-                      ),
-                    ),
-                ),
-
-                Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: OutlineButton(
-                        borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
-                        onPressed: () {
-
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(14.0, 70.0, 14.0, 70.0),
-                          child: new Icon(Icons.add, color: grey,),
-                        ),
-                      ),
-                    ),
-                ),
-              ],
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('Enter a product name within 10 charecters.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: red, fontSize: 12.0),),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                          Flexible(
-                            child: TextFormField(
-                              decoration: const InputDecoration(
-                                icon: Icon(Icons.apps),
-                                hintText: 'Product name',
-                              ),
-                              validator: (value) {
-                                if(value.isEmpty) {
-                                  return "You must enter the product name";
-                                } else if(value.length > 10) {
-                                  return "Product name can't have more than 10 letters";
-                                }
-                              },
-                              onSaved: (String value) {
-                                // This optional block of code can be used to run
-                                // code when the user saves the form.
-                              },
-                            ),
-                          )
-
-                      ],
-                    ),
-                  ),
-              ),
-              
-              // select category
               Row(
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text('Category: ', style: TextStyle(color: red, fontSize: 10.0)),
-                  ),
-                  DropdownButton(
-                    items: categoriesDropDown,
-                    onChanged: changeSelectedCategory,
-                    value: _currentCategory,
-                    style: TextStyle(color: Colors.black, fontSize: 20.0),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: OutlineButton(
+                        borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
+                        onPressed: (){
+                          _selectImage(ImagePicker.pickImage(source: ImageSource.gallery), 1);
+                        },
+                        child: _displayChild1()
+                      ),
+                    ),
                   ),
 
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text('Brand: ', style: TextStyle(color: red, fontSize: 10.0)),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: OutlineButton(
+                        borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
+                        onPressed: (){
+                          _selectImage(ImagePicker.pickImage(source: ImageSource.gallery), 2);
+
+                        },
+                        child: _displayChild2()
+                      ),
+                    ),
                   ),
-                  DropdownButton(
-                    items: brandsDropDown,
-                    onChanged: changeSelectedBrand,
-                    value: _currentBrand,
-                    style: TextStyle(color: Colors.black, fontSize: 20.0),
+
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: OutlineButton(
+                        borderSide: BorderSide(color: grey.withOpacity(0.5), width: 2.5),
+                        onPressed: (){
+                          _selectImage(ImagePicker.pickImage(source: ImageSource.gallery), 3);
+                        },
+                        child: _displayChild3(),
+                      ),
+                    ),
                   ),
                 ],
               ),
 
-              // select brand
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('enter a product name with 10 characters at maximum',textAlign: TextAlign.center ,style: TextStyle(color: red, fontSize: 12),),
+              ),
+
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: TextFormField(
                   controller: productNameController,
-                  keyboardType: TextInputType.numberWithOptions(),
                   decoration: InputDecoration(
-                    hintText: "Quantity"
+                    hintText: 'Product name'
                   ),
-                  style: TextStyle(fontSize: 10.0),
-                  validator: (value) {
-                    if(value.isEmpty) {
-                      return "You must enter the product quantity";
+                  validator: (value){
+                    if(value.isEmpty){
+                      return 'You must enter the product name';
+                    }else if(value.length > 10){
+                      return 'Product name cant have more than 10 letters';
                     }
                   },
                 ),
               ),
 
-              Text('Available Sizes: ', style: TextStyle(fontSize: 10.0),),
+//              select category
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Category: ', style: TextStyle(color: red),),
+                    ),
+                    DropdownButton(items: categoriesDropDown, onChanged: changeSelectedCategory, value: _currentCategory,),
+
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Brand: ', style: TextStyle(color: red),),
+                    ),
+                    DropdownButton(items: brandsDropDown, onChanged: changeSelectedBrand, value: _currentBrand,),
+                  ],
+                ),
+
+//
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TextFormField(
+                  controller: quatityController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                      hintText: 'Quantity',
+                  ),
+                  validator: (value){
+                    if(value.isEmpty){
+                      return 'You must enter the product name';
+                    }
+                  },
+                ),
+              ),
+
+              Text('Available Sizes'),
 
               Row(
                 children: <Widget>[
-                  Checkbox(value: selectedSizes.contains('XS'), 
-                            onChanged: (value) => changeSelectedSize('XS'),),
-                  Text('XS', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('XS'), onChanged: (value) => changeSelectedSize('XS')),
+                  Text('XS'),
 
-                  Checkbox(value: selectedSizes.contains('S'), 
-                            onChanged: (value) => changeSelectedSize('S'),),
-                  Text('S', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('S'), onChanged: (value) => changeSelectedSize('S')),
+                  Text('S'),
 
-                  Checkbox(value: selectedSizes.contains('M'), 
-                            onChanged: (value) => changeSelectedSize('M'),),
-                  Text('M', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('M'), onChanged: (value) => changeSelectedSize('M')),
+                  Text('M'),
 
-                  Checkbox(value: selectedSizes.contains('L'), 
-                            onChanged: (value) => changeSelectedSize('L'),),
-                  Text('L', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('L'), onChanged: (value) => changeSelectedSize('L')),
+                  Text('L'),
 
-                  Checkbox(value: selectedSizes.contains('XL'), 
-                            onChanged: (value) => changeSelectedSize('XL'),),
-                  Text('XL', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('XL'), onChanged: (value) => changeSelectedSize('XL')),
+                  Text('XL'),
 
-                  Checkbox(value: selectedSizes.contains('XXL'), 
-                            onChanged: (value) => changeSelectedSize('XXL'),),
-                  Text('XXL', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('XXL'), onChanged: (value) => changeSelectedSize('XXL')),
+                  Text('XXL'),
                 ],
               ),
 
               Row(
                 children: <Widget>[
-                  Checkbox(value: selectedSizes.contains('28'), 
-                            onChanged: (value) => changeSelectedSize('28'),),
-                  Text('28', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('28'), onChanged: (value) => changeSelectedSize('28')),
+                  Text('28'),
 
-                  Checkbox(value: selectedSizes.contains('30'), 
-                            onChanged: (value) => changeSelectedSize('30'),),
-                  Text('30', style: TextStyle(fontSize: 8.0),),
-                  
-                  Checkbox(value: selectedSizes.contains('32'), 
-                            onChanged: (value) => changeSelectedSize('32'),),
-                  Text('32', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('30'), onChanged: (value) => changeSelectedSize('30')),
+                  Text('30'),
 
-                  Checkbox(value: selectedSizes.contains('34'), 
-                            onChanged: (value) => changeSelectedSize('34'),),
-                  Text('34', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('32'), onChanged: (value) => changeSelectedSize('32')),
+                  Text('32'),
 
-                  Checkbox(value: selectedSizes.contains('36'), 
-                            onChanged: (value) => changeSelectedSize('36'),),
-                  Text('36', style: TextStyle(fontSize: 8.0),),
+                  Checkbox(value: selectedSizes.contains('34'), onChanged: (value) => changeSelectedSize('34')),
+                  Text('34'),
 
-                  Checkbox(value: selectedSizes.contains('38'), 
-                            onChanged: (value) => changeSelectedSize('38'),),
-                  Text('38', style: TextStyle(fontSize: 8.0),),
 
+                  Checkbox(value: selectedSizes.contains('36'), onChanged: (value) => changeSelectedSize('36')),
+                  Text('36'),
+
+                  Checkbox(value: selectedSizes.contains('38'), onChanged: (value) => changeSelectedSize('38')),
+                  Text('38'),
                 ],
               ),
 
               // Row(
               //   children: <Widget>[
-              //     Checkbox(value: false, onChanged: null,),
-              //     Text('40', style: TextStyle(fontSize: 8.0),),
+              //     Checkbox(value: selectedSizes.contains('40'), onChanged: (value) => changeSelectedSize('40')),
+              //     Text('40'),
 
-              //     Checkbox(value: false, onChanged: null,),
-              //     Text('42', style: TextStyle(fontSize: 8.0),),
+              //     Checkbox(value: selectedSizes.contains('42'), onChanged: (value) => changeSelectedSize('42')),
+              //     Text('42'),
 
-              //     Checkbox(value: false, onChanged: null,),
-              //     Text('44', style: TextStyle(fontSize: 8.0),),
+              //     Checkbox(value: selectedSizes.contains('44'), onChanged: (value) => changeSelectedSize('44')),
+              //     Text('44'),
 
-              //     Checkbox(value: false, onChanged: null,),
-              //     Text('46', style: TextStyle(fontSize: 8.0),),
+              //     Checkbox(value: selectedSizes.contains('46'), onChanged: (value) => changeSelectedSize('46')),
+              //     Text('46'),
 
-              //     Checkbox(value: false, onChanged: null,),
-              //     Text('48', style: TextStyle(fontSize: 8.0),),
+              //     Checkbox(value: selectedSizes.contains('48'), onChanged: (value) => changeSelectedSize('48')),
+              //     Text('48'),
 
-              //     Checkbox(value: false, onChanged: null,),
-              //     Text('50', style: TextStyle(fontSize: 8.0),),
+              //     Checkbox(value: selectedSizes.contains('50'), onChanged: (value) => changeSelectedSize('50')),
+              //     Text('50'),
               //   ],
               // ),
 
               FlatButton(
                 color: red,
                 textColor: white,
-                child: Text("add product"),
-                onPressed: () {
-
+                child: Text('add product'),
+                onPressed: (){
+                  validateAndUpload();
                 },
-              ),
-
+              )
             ],
           ),
         ),
@@ -311,13 +266,23 @@ class _AddProductState extends State<AddProduct> {
     );
   }
 
-  _getCategories() async {
+   _getCategories() async{
     List<DocumentSnapshot> data = await _categoryService.getCategories();
+    print(data.length);
     setState(() {
       categories = data;
-      categoriesDropDown = getCategoriesDropDown();
+      categoriesDropDown = getCategoriesDropdown();
       _currentCategory = categories[0].data['category'];
-      print(data.length);
+    });
+   }
+
+  _getBrands() async{
+    List<DocumentSnapshot> data = await _brandService.geBrands();
+    print(data.length);
+    setState(() {
+      brands = data;
+      brandsDropDown = getBrandosDropDown();
+      _currentBrand = brands[0].data['brand'];
     });
   }
 
@@ -325,29 +290,80 @@ class _AddProductState extends State<AddProduct> {
     setState(() => _currentCategory = selectedCategory);
   }
 
-  _getBrands() async {
-    List<DocumentSnapshot> data = await _brandService.getBtands();
-    setState(() {
-      brands = data;
-      brandsDropDown = getBrandsDropDown();
-      _currentBrand = brands[0].data['brand'];
-      print(data.length);
-    });
-  }
-
   changeSelectedBrand(String selectedBrand) {
-    setState(() => _currentBrand = selectedBrand);
+    setState(() => _currentCategory = selectedBrand);
   }
 
   void changeSelectedSize(String size) {
-    if(selectedSizes.contains(size)) {
-      setState(() { 
+    if(selectedSizes.contains(size)){
+      setState(() {
         selectedSizes.remove(size);
       });
-    } else {
+    }else{
       setState(() {
-        selectedSizes.add(size);
+        selectedSizes.insert(0, size);
       });
+    }
+  }
+
+  void _selectImage(Future<File> pickImage, int imageNumber) async{
+    File tempImg = await pickImage;
+    switch(imageNumber){
+      case 1:  setState(() => _image1 = tempImg);
+      break;
+      case 2:  setState(() => _image2 = tempImg);
+      break;
+      case 3:  setState(() => _image3 = tempImg);
+      break;
+    }
+  }
+
+ Widget _displayChild1() {
+    if(_image1 == null){
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(14, 70, 14, 70),
+        child: new Icon(Icons.add, color: grey,),
+      );
+    }else{
+      return Image.file(_image1, fit: BoxFit.fill, width: double.infinity,);
+    }
+ }
+
+  Widget _displayChild2() {
+    if(_image2 == null){
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(14, 70, 14, 70),
+        child: new Icon(Icons.add, color: grey,),
+      );
+    }else{
+      return Image.file(_image2, fit: BoxFit.fill, width: double.infinity,);
+    }
+  }
+
+  Widget _displayChild3() {
+    if(_image3 == null){
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(14, 70, 14, 70),
+        child: new Icon(Icons.add, color: grey,),
+      );
+    }else{
+       return Image.file(_image3, fit: BoxFit.fill, width: double.infinity,);
+    }
+  }
+
+  void validateAndUpload() {
+    if(_formKey.currentState.validate()){
+        if(_image1 != null && _image2 != null && _image3 != null){
+          if(selectedSizes.isNotEmpty){
+            String imageUrl;
+            final String picture = "${DateTime.now().millisecondsSinceEpoch.toString()}.jpg";
+//            StorageUploadTask task = storage.ref
+          }else{
+            Fluttertoast.showToast(msg: 'select atleast one size');
+          }
+        }else{
+          Fluttertoast.showToast(msg: 'all the images must be provided');
+        }
     }
   }
 }
